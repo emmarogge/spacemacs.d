@@ -109,6 +109,7 @@ values."
      org-gcal
      org-mobile-sync
      xclip
+     nlinum
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -601,6 +602,17 @@ layers configuration. You are free to put any user code."
 
   ;; Pairing stuff
   (global-set-key (kbd "<end>") 'evil-end-of-line)
+  (require 'nlinum)
+  (defun nlinum-current-window ()
+    (walk-windows (lambda (w)
+                    (unless (eq w (selected-window))
+                      (with-current-buffer (window-buffer w)
+                        (nlinum-mode -1)))))
+    (nlinum-mode +1))
+
+  (add-hook 'php-mode-hook 'nlinum-mode)
+  (add-hook 'scss-mode-hook 'nlinum-mode)
+  (add-hook 'rjsx-mode-hook 'nlinum-mode)
 
   ;; load private settings
   (when (file-exists-p "~/.emacs-private.el")
