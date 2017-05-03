@@ -456,6 +456,7 @@ layers configuration. You are free to put any user code."
   ;; Do not insert ^
   (setq ivy-initial-inputs-alist nil)
 
+  (setq projectile-enable-caching t)
   ;; Add `M-o v' and `M-o s' to open projectile files and buffers in splits
   ;; from ivy
   (with-eval-after-load 'counsel-projectile
