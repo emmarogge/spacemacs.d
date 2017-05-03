@@ -110,6 +110,7 @@ values."
      org-mobile-sync
      xclip
      nlinum
+     counsel-gtags
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
