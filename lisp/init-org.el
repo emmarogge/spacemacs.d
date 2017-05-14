@@ -1,3 +1,5 @@
+(require 'dash)
+
 (defun org-keys ()
   (interactive)
   ;; Make ~SPC ,~ work, reference:
@@ -117,6 +119,8 @@
 (advice-add 'org-agenda-todo :after 'aj/org-save-all-org-buffers)
 (advice-add 'org-agenda-deadline :after 'aj/org-save-all-org-buffers)
 (advice-add 'org-agenda-schedule :after 'aj/org-save-all-org-buffers)
+(advice-add 'org-agenda-refile :after 'aj/org-save-all-org-buffers)
+(advice-add 'org-refile :after 'aj/org-save-all-org-buffers)
 
 ;; Custom org-agenda view
 (setq org-agenda-compact-blocks t)
@@ -143,7 +147,7 @@
           (subtree-end (save-excursion (org-end-of-subtree t))))
       (if (member (org-get-todo-state) org-todo-keywords-1)
           (if (member (org-get-todo-state) org-done-keywords)
-              (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
+              (let* ((daynr (string-to-number (format-time-string "%d" (current-time))))
                      (a-month-ago (* 60 60 24 (+ daynr 1)))
                      (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
                      (this-month (format-time-string "%Y-%m-" (current-time)))
@@ -159,10 +163,17 @@
 (defun org-agenda-show-agenda (&optional arg)
   (interactive "P")
   (org-agenda arg " ")
-  (org-agenda-redo))
+  (run-with-idle-timer 1 nil 'org-agenda-redo))
 (spacemacs/set-leader-keys "oa" 'org-agenda-show-agenda)
 
 ;; org-refile settings
+(defun aj/refile-target-files ()
+  (let ((exclude (and
+                  (boundp 'org-gcal-file-alist)
+                  (-map 'cdr org-gcal-file-alist))))
+    (-reject (lambda (file) (-contains-p exclude file))
+             (org-agenda-files))))
+
 (setq org-refile-targets '((nil :maxlevel . 9)
                            (org-agenda-files :maxlevel . 9)))
 (setq org-refile-use-outline-path 'file)
